@@ -71,6 +71,8 @@ void main (void)
 {
 	float period;
 	float bpm;
+	char periodString[8];
+	char BPMString[8];
 		WriteCommand(0x40);
 	WriteData(0x00);
 	WriteData(0x00);
@@ -81,8 +83,6 @@ void main (void)
 	WriteData(0x04);
 	WriteData(0x00);
 
-	char periodString[8];
-	char BPMString[8];
 	PCA0MD &= ~0x40; // WDTE = 0 (clear watchdog timer enable)
 	PORT_Init();     // Initialize Port I/O
 	SYSCLK_Init ();  // Initialize Oscillator
@@ -128,7 +128,7 @@ void main (void)
 		}
 		
 		WriteCommand(0x88);
-		WriteData(" ");
+		WriteData(' ');
 		TR0=0; // Stop timer 0, the 24-bit number [overflow_count-TH0-TL0] has the period!
 		period=(overflow_count*65536.0+TH0*256.0+TL0)*(12.0/SYSCLK);
 		// Send the period to the serial port
