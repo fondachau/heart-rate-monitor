@@ -117,19 +117,24 @@ void main (void)
 		TR0=0; // Stop timer 0, the 24-bit number [overflow_count-TH0-TL0] has the period!
 		period=(overflow_count*65536.0+TH0*256.0+TL0)*(12.0/SYSCLK);
 		// Send the period to the serial port
-		printf( "\rperiod=%fs\n" , period);
+		//printf( "\rperiod=%fs\n" , period);
 		bpm=60/period;
-		printf("bpm=%fbeats per min\n", bpm);
+		//printf("bpm=%fbeats per min\n", bpm);
 		// ftoa(float n, char *res, int afterpoint) located in LCD_4bit_F381.h file
 		// convert floats to strings
+		printf( "\rperiod=%s\n" , periodString);
+		printf("bpm=%sbeats per min\n", BPMString);
+		
 		ftoa(period, periodString, 3);
-		ftoa(bpm, BPMString, 3)
+		ftoa(bpm, BPMString, 3);
 		// print to LCD
-		LCDprint(periodString, 1, 1);
+		LCDprint("BPM:", 1, 0);
 		LCDprint(BPMString, 2, 1);
-    }
-	
+	}
 }
+
+
+ 
 
 
  
