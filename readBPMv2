@@ -9,6 +9,20 @@
 
 unsigned char overflow_count;
 
+// plays sound out of pin P1_4 for number*2 number of seconds
+void playSound(int number) {
+	P1_4 = 0;
+	while (number>0){
+		waitms (2);
+		if (P1_4 == 1)
+			P1_4 = 0;
+		else
+			P1_4 = 1;
+		number--;
+	}
+	P1_4 = 0;
+}
+
 void PORT_Init (void)
 {
 	P0MDOUT |= 0x10; // Enable UART TX as push-pull output
@@ -152,6 +166,7 @@ void main (void)
 		while(P0_1!=1); // Wait for the signal to be one
 		WriteCommand(0x88);
 		WriteData(0x8);
+		playSound(50);
 		TR0=1; // Start the timer
 		while(P0_1!=0) // Wait for the signal to be zero
 		{
@@ -161,8 +176,12 @@ void main (void)
 				overflow_count++;
 			}
 		}
+		// clear the heart
 		WriteCommand(0x88);
 		WriteData(' ');
+		
+		
+		
 		while(P0_1!=1) // Wait for the signal to be one
 		{
 			if(TF0==1) // Did the 16-bit timer overflow?
@@ -171,11 +190,14 @@ void main (void)
 				overflow_count++;
 			}
 		}
+		// writing the heart
 		WriteCommand(0x88);
 		WriteData(0x8);
 		
+		playSound(50);
 
 		TR0=0; // Stop timer 0, the 24-bit number [overflow_count-TH0-TL0] has the period!
+		
 		period=(overflow_count*65536.0+TH0*256.0+TL0)*(12.0/SYSCLK);
 		// Send the period to the serial port
 		//printf( "\rperiod=%fs\n" , period);
@@ -205,6 +227,6 @@ void main (void)
 		if(bpm<desiredheartrate-3){
 			WriteCommand(0xcf);
 			WriteData('L');
-		}
+		}		
 	}
 }
