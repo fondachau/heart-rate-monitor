@@ -71,6 +71,16 @@ void main (void)
 {
 	float period;
 	float bpm;
+		WriteCommand(0x40);
+	WriteData(0x00);
+	WriteData(0x00);
+	WriteData(0x0a);
+	WriteData(0x1f);
+	WriteData(0x1f);
+	WriteData(0x0e);
+	WriteData(0x04);
+	WriteData(0x00);
+
 	char periodString[8];
 	char BPMString[8];
 	PCA0MD &= ~0x40; // WDTE = 0 (clear watchdog timer enable)
@@ -97,6 +107,8 @@ void main (void)
 		
 		while(P0_1!=0); // Wait for the signal to be zero
 		while(P0_1!=1); // Wait for the signal to be one
+		WriteCommand(0x88);
+		WriteData(0x0);
 		TR0=1; // Start the timer
 		while(P0_1!=0) // Wait for the signal to be zero
 		{
@@ -114,6 +126,9 @@ void main (void)
 				overflow_count++;
 			}
 		}
+		
+		WriteCommand(0x88);
+		WriteData(" ");
 		TR0=0; // Stop timer 0, the 24-bit number [overflow_count-TH0-TL0] has the period!
 		period=(overflow_count*65536.0+TH0*256.0+TL0)*(12.0/SYSCLK);
 		// Send the period to the serial port
@@ -130,6 +145,7 @@ void main (void)
 		// print to LCD
 		LCDprint("BPM:", 1, 0);
 		LCDprint(BPMString, 2, 1);
+		
 	}
 }
 
