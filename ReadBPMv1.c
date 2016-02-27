@@ -73,29 +73,30 @@ void main (void)
 	float bpm;
 	char periodString[8];
 	char BPMString[8];
-	WriteCommand(0x40);
-	WriteData(0);
-	WriteData(0);
-	WriteData(10);
-	WriteData(31);
-	WriteData(31);
-	WriteData(14);
-	WriteData(4);
-	WriteData(0);
-
 	PCA0MD &= ~0x40; // WDTE = 0 (clear watchdog timer enable)
 	PORT_Init();     // Initialize Port I/O
 	SYSCLK_Init ();  // Initialize Oscillator
 	UART0_Init();    // Initialize UART0
 	TIMER0_Init();
 	LCD_4BIT();		// initialize the LCD
-
+		
+	WriteCommand(0x40);
+	WriteData(0x00);
+	WriteData(0x00);
+	WriteData(0x0a);
+	WriteData(0x1f);
+	WriteData(0x1f);
+	WriteData(0x0e);
+	WriteData(0x04);
+	WriteData(0x00);
 	printf("\x1b[2J"); // Clear screen using ANSI escape sequence.
 
 	printf ("Period measurement at pin P0.1 using Timer 0.\n"
 	        "File: %s\n"
 	        "Compiled: %s, %s\n\n",
 	        __FILE__, __DATE__, __TIME__);
+	LCDprint("NO PULSE FOUND", 2, 0);
+
 
     while (1)
     {
@@ -110,7 +111,7 @@ void main (void)
 		WriteData(' ');
 		while(P0_1!=1); // Wait for the signal to be one
 		WriteCommand(0x88);
-		WriteData(0x0);
+		WriteData(0x8);
 		TR0=1; // Start the timer
 		while(P0_1!=0) // Wait for the signal to be zero
 		{
@@ -131,7 +132,7 @@ void main (void)
 			}
 		}
 		WriteCommand(0x88);
-		WriteData(0x0);
+		WriteData(0x8);
 		
 
 		TR0=0; // Stop timer 0, the 24-bit number [overflow_count-TH0-TL0] has the period!
